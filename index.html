@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Temperature Converter | SCT_SD_1</title>
+    <style>
+        :root {
+            --bg-deep: #020817;
+            --bg-blue: #0f172a;
+            --bg-violet: #312e81;
+            --bg-purple: #4c1d95;
+            --card-bg: rgba(15, 23, 42, 0.72);
+            --card-border: rgba(148, 163, 184, 0.32);
+            --text-main: #e2e8f0;
+            --text-soft: #cbd5e1;
+            --primary: #7dd3fc;
+            --primary-deep: #38bdf8;
+            --primary-dark: #0ea5e9;
+            --secondary: #f8fafc;
+            --secondary-text: #0f172a;
+            --success: #a7f3d0;
+            --error: #fca5a5;
+            --shadow: rgba(15, 23, 42, 0.55);
+            --glow: rgba(125, 211, 252, 0.26);
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            background:
+                radial-gradient(circle at 15% 20%, rgba(125, 211, 252, 0.35), transparent 18%),
+                radial-gradient(circle at 80% 80%, rgba(168, 85, 247, 0.38), transparent 24%),
+                linear-gradient(135deg, var(--bg-deep), var(--bg-blue), var(--bg-violet), var(--bg-purple));
+            color: var(--text-main);
+            padding: 28px;
+            position: relative;
+            overflow: hidden;
+            animation: backgroundShift 14s ease-in-out infinite alternate;
+        }
+
+        body::before,
+        body::after {
+            content: "";
+            position: absolute;
+            width: 420px;
+            height: 420px;
+            border-radius: 50%;
+            filter: blur(70px);
+            opacity: 0.28;
+            z-index: 0;
+        }
+
+        body::before {
+            background: rgba(56, 189, 248, 0.4);
+            top: -120px;
+            left: -90px;
+        }
+
+        body::after {
+            background: rgba(192, 132, 252, 0.34);
+            right: -100px;
+            bottom: -140px;
+        }
+
+        .card {
+            position: relative;
+            z-index: 1;
+            width: min(92%, 520px);
+            padding: 28px 28px 24px;
+            border-radius: 28px;
+            background: linear-gradient(180deg, rgba(15, 23, 42, 0.8), rgba(15, 23, 42, 0.68));
+            border: 1px solid var(--card-border);
+            box-shadow: 0 30px 80px var(--shadow), 0 0 0 1px rgba(255,255,255,0.05) inset, 0 0 28px rgba(125, 211, 252, 0.12);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            animation: floatCard 6s ease-in-out infinite;
+        }
+
+        .card::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            border-radius: 28px;
+            background: linear-gradient(135deg, rgba(125, 211, 252, 0.08), rgba(168, 85, 247, 0.06));
+            pointer-events: none;
+        }
+
+        .title-wrap {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+
+        .icon-badge {
+            width: 52px;
+            height: 52px;
+            border-radius: 16px;
+            display: grid;
+            place-items: center;
+            font-size: 1.7rem;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: #082f49;
+            box-shadow: 0 12px 28px rgba(56, 189, 248, 0.4);
+        }
+
+        h1 {
+            margin: 0;
+            text-align: center;
+            font-size: clamp(2rem, 4vw, 2.6rem);
+            color: #f8fafc;
+            letter-spacing: 0.5px;
+            text-shadow: 0 4px 18px rgba(125, 211, 252, 0.25);
+        }
+
+        .subtitle {
+            text-align: center;
+            color: var(--text-soft);
+            margin: 10px 0 26px;
+            font-size: 1rem;
+            letter-spacing: 0.05em;
+        }
+
+        label {
+            display: block;
+            margin: 18px 0 8px;
+            font-weight: 700;
+            color: #f8fafc;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 15px 15px;
+            border-radius: 14px;
+            border: 1px solid rgba(148, 163, 184, 0.45);
+            font-size: 16px;
+            background: rgba(248, 250, 252, 0.98);
+            color: var(--secondary-text);
+            outline: none;
+            transition: box-shadow 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+        }
+
+        input:hover, select:hover {
+            transform: translateY(-1px);
+        }
+
+        input:focus, select:focus {
+            border-color: var(--primary-deep);
+            box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.18);
+        }
+
+        .button-row {
+            display: flex;
+            gap: 12px;
+            margin-top: 26px;
+        }
+
+        button {
+            flex: 1;
+            padding: 15px 18px;
+            border-radius: 14px;
+            border: none;
+            font-size: 16px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: transform 0.2s ease, opacity 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            opacity: 0.98;
+        }
+
+        .primary-btn {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: #082f49;
+            box-shadow: 0 12px 26px rgba(14, 165, 233, 0.35);
+            animation: pulseGlow 2.8s ease-in-out infinite;
+        }
+
+        .reset-btn {
+            background: rgba(248, 250, 252, 0.12);
+            color: var(--text-main);
+            border: 1px solid rgba(248, 250, 252, 0.2);
+            box-shadow: 0 10px 20px rgba(15, 23, 42, 0.2);
+        }
+
+        .result {
+            margin-top: 24px;
+            padding: 18px 16px;
+            border-radius: 16px;
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid rgba(167, 243, 208, 0.18);
+            text-align: center;
+            font-size: 18px;
+            line-height: 1.6;
+            color: var(--success);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.05), 0 0 18px rgba(167, 243, 208, 0.08);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .result:hover {
+            transform: translateY(-1px);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.05), 0 0 22px rgba(167, 243, 208, 0.12);
+        }
+
+        .error { color: var(--error); }
+
+        .footer {
+            margin-top: 22px;
+            text-align: center;
+            color: #dbeafe;
+            font-size: 13px;
+            letter-spacing: 0.03em;
+        }
+
+        @keyframes floatCard {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-4px); }
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 12px 28px rgba(14, 165, 233, 0.35); }
+            50% { box-shadow: 0 16px 34px rgba(56, 189, 248, 0.52); }
+        }
+
+        @keyframes backgroundShift {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 100% 50%; }
+        }
+    </style>
+</head>
+<body>
+    <main class="card">
+        <div class="title-wrap">
+            <div class="icon-badge">🌡️</div>
+            <h1>Temperature Converter</h1>
+        </div>
+        <p class="subtitle">Celsius • Fahrenheit • Kelvin</p>
+
+        <label for="temperature">Enter Temperature</label>
+        <input id="temperature" type="number" step="any" placeholder="Example: 25">
+
+        <label for="fromUnit">From</label>
+        <select id="fromUnit">
+            <option value="C">Celsius (°C)</option>
+            <option value="F">Fahrenheit (°F)</option>
+            <option value="K">Kelvin (K)</option>
+        </select>
+
+        <label for="toUnit">Convert To</label>
+        <select id="toUnit">
+            <option value="F">Fahrenheit (°F)</option>
+            <option value="C">Celsius (°C)</option>
+            <option value="K">Kelvin (K)</option>
+        </select>
+
+        <div class="button-row">
+            <button class="primary-btn" type="button" onclick="convertTemperature()">Convert</button>
+            <button class="reset-btn" type="button" onclick="resetForm()">Reset</button>
+        </div>
+
+        <div id="result" class="result">Enter a value and choose the units.</div>
+
+        <div class="footer">SkillCraft Technology — Software Development Internship — Task 01</div>
+    </main>
+
+    <script>
+        function convertTemperature() {
+            const value = Number(document.getElementById("temperature").value);
+            const from = document.getElementById("fromUnit").value;
+            const to = document.getElementById("toUnit").value;
+            const result = document.getElementById("result");
+
+            if (document.getElementById("temperature").value.trim() === "" || !Number.isFinite(value)) {
+                result.innerHTML = '<span class="error">Please enter a valid temperature.</span>';
+                return;
+            }
+
+            // First convert the input to Celsius.
+            let celsius;
+            if (from === "C") celsius = value;
+            else if (from === "F") celsius = (value - 32) * 5 / 9;
+            else celsius = value - 273.15;
+
+            // Kelvin cannot be below absolute zero.
+            if (celsius < -273.15) {
+                result.innerHTML = '<span class="error">Temperature cannot be below absolute zero (-273.15 °C).</span>';
+                return;
+            }
+
+            let converted;
+            let symbol;
+
+            if (to === "C") {
+                converted = celsius;
+                symbol = "°C";
+            } else if (to === "F") {
+                converted = (celsius * 9 / 5) + 32;
+                symbol = "°F";
+            } else {
+                converted = celsius + 273.15;
+                symbol = "K";
+            }
+
+            result.innerHTML = `<strong>${value} ${unitName(from)}</strong><br>
+                                = <strong>${converted.toFixed(2)} ${symbol}</strong>`;
+        }
+
+        function unitName(unit) {
+            if (unit === "C") return "°C";
+            if (unit === "F") return "°F";
+            return "K";
+        }
+
+        function resetForm() {
+            document.getElementById("temperature").value = "";
+            document.getElementById("fromUnit").selectedIndex = 0;
+            document.getElementById("toUnit").selectedIndex = 1;
+
+            const result = document.getElementById("result");
+            result.className = "result";
+            result.innerHTML = "Enter a value and choose the units.";
+        }
+    </script>
+</body>
+</html>
